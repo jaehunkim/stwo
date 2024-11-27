@@ -141,6 +141,7 @@ impl PolyOps for CpuBackend {
                 fft_layer_loop(&mut values, layer + 1, h, t, butterfly);
             }
         }
+
         for (h, t) in circle_twiddles.enumerate() {
             fft_layer_loop(&mut values, 0, h, t, butterfly);
         }
@@ -220,7 +221,7 @@ fn fft_layer_loop(
 /// Computes the circle twiddles layer (layer 0) from the first line twiddles layer (layer 1).
 ///
 /// Only works for line twiddles generated from a domain with size `>4`.
-fn circle_twiddles_from_line_twiddles(
+pub fn circle_twiddles_from_line_twiddles(
     first_line_twiddles: &[BaseField],
 ) -> impl Iterator<Item = BaseField> + '_ {
     // The twiddles for layer 0 can be computed from the twiddles for layer 1.
@@ -374,6 +375,10 @@ mod tests {
         let poly = CpuCirclePoly::new((1..=8).map(BaseField::from).collect());
         let domain = CanonicCoset::new(3).circle_domain();
         let evals = poly.clone().evaluate(domain);
+
+        println!("evals: {:?}", evals);
+        println!("domain: {:?}", domain);
+        println!("values: {:?}", evals.values);
 
         let interpolated_poly = evals.interpolate();
 
